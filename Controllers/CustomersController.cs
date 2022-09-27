@@ -35,6 +35,21 @@ namespace Customer_Pricing_API.Controllers
             }
         }
 
+        [HttpGet("GetCustomer/{ID}")]//Get list off all Customers with related product ID's
+        public IActionResult Get([FromRoute] int Id)
+        {
+            try
+            {
+                var customer = _dbContext.SpecificPricesDB.FirstOrDefault(x => x.ID == Id);
+                if (customer == null) return StatusCode(404, "No Product Found With That ID");
+                return Ok(customer);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error In Data");
+            }
+        }
+
         //Add new Customer Relation with product ID
         [HttpPost("AddCustomer")]//add new product to DB
         public IActionResult Create([FromBody] CustomerRecords request)//parameter in the Body of the request
@@ -63,6 +78,7 @@ namespace Customer_Pricing_API.Controllers
         private decimal GetPriceFromProdt(int ProductRefID)
         {
             var product = _dbContext.DBProducts.FirstOrDefault(x => x.ID == ProductRefID);
+            if(product == null) return 0.0m;//if we cant find a mathch then just 0
             return product.price;
         }
 
@@ -93,7 +109,7 @@ namespace Customer_Pricing_API.Controllers
         }
 
 
-        [HttpDelete("DeleteProduct/{ID}")]
+        [HttpDelete("DeleteCustomer/{ID}")]
         public IActionResult Delete([FromRoute] int Id)//FromRoute = tick it from the route and pass ID
         {
             try
